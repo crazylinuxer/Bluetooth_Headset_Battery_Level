@@ -56,7 +56,7 @@ def getATCommand(sock, line, device):
         send(sock, b"OK")
 
     if blevel != -1:
-        print(f"Battery level for {device} is {blevel}%")
+        print(f"{blevel}%")
         return False
 
     return True
@@ -88,9 +88,16 @@ def main():
                 device = device[:i]
             try:
                 s = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+                s.settimeout(5)
                 s.connect((device, port))
-                while getATCommand(s, s.recv(128), device):
-                    pass
+                while True:
+                    try:
+                        if not getATCommand(s, s.recv(128), device):
+                            break
+                    except s.error:
+                        s.settimeout(12)
+                        if not getATCommand(s, s.recv(128), device):
+                            break
                 s.close()
             except OSError as e:
                 print(f"{device} is offline", e)
