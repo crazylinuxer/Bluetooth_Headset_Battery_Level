@@ -11,6 +11,7 @@ A python script to get battery level from Bluetooth headsets
 import errno
 import bluetooth
 import sys
+import time
 
 
 def send(sock, message):
@@ -73,6 +74,8 @@ def find_rfcomm_port(device):
                 port = proto[j]['port']
                 return port
 
+main_relaunched = {"status": False}
+
 def main():
     if (len(sys.argv) < 2):
         print("Usage: bluetooth_battery.py BT_MAC_ADDRESS_1.PORT ...")
@@ -88,17 +91,23 @@ def main():
                 device = device[:i]
             try:
                 s = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-                s.settimeout(5)
                 s.connect((device, port))
+                s.settimeout(4)
                 while True:
                     try:
                         if not getATCommand(s, s.recv(128), device):
+                            s.close()
                             break
-                    except s.error:
-                        s.settimeout(12)
-                        if not getATCommand(s, s.recv(128), device):
-                            break
-                s.close()
+                    except bluetooth.btcommon.BluetoothError:
+                        s.close()
+                        if not main_relaunched["status"]:
+                            main_relaunched["status"] = True
+                            time.sleep(0.5)
+                            main()
+                        break
+                    except Exception as ex:
+                        s.close()
+                        raise ex
             except OSError as e:
                 print(f"{device} is offline", e)
 
