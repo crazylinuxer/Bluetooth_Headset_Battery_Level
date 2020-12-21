@@ -60,7 +60,7 @@ def getATCommand(sock, line, device):
         send(sock, b"OK")
 
     if blevel != -1:
-        print(f"{blevel}%")
+        print(f"Headset {blevel}%")
         return False
 
     return True
@@ -69,7 +69,7 @@ def find_rfcomm_port(device):
     uuid="0000111e-0000-1000-8000-00805f9b34fb"
     proto = bluetooth.find_service(address=device, uuid=uuid)
     if len(proto) == 0:
-        print("Couldn't find the RFCOMM port number")
+        # print("Couldn't find the RFCOMM port number")
         return 4
     else:
         for j in range(len(proto)):
@@ -112,7 +112,7 @@ def main():
                         s.close()
                         raise ex
             except OSError as e:
-                print(f"{device} is offline", e)
+                pass  # print(f"{device} is offline", e)
 
 
 if __name__ == "__main__":
