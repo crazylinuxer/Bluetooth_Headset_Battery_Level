@@ -4,7 +4,7 @@ import os
 import sys
 
 
-UPDATE_PERIOD_SECONDS = 600
+UPDATE_PERIOD_SECONDS = 360
 CACHE_FOLDER = '/tmp/bt_headset_charge_cache'
 
 
