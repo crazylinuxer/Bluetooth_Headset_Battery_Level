@@ -60,7 +60,7 @@ def getATCommand(sock, line, device):
         send(sock, b"OK")
 
     if blevel != -1:
-        print(f"Headset {blevel}%")
+        print(f"{blevel}%")
         return False
 
     return True
